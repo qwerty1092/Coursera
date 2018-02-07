@@ -54,20 +54,31 @@ class EchoServerClientProtocol(asyncio.Protocol):
                 msg='ok\n\n'
             else:
                 msg='error\nwrong command\n\n'
-            print(msg)
-            print(server_data)
                 
             with open(st_path, 'w') as f:
                     f.write(json.dumps(server_data))
                     
-            self.transport.write(msg.encode())    
         if text[0]=='get':
+            
             if text[1][:-1] in server_data:
-                msg=json.dumps({text[1][:-1]:[server_data[text[1][:-1]]]})
+                print(text[1][:-1])
+                msg='ok\n'
+                for values in server_data[text[1][:-1]]:
+                    val1=str(values[0])
+                    val2=str(values[1])
+                    msg=msg+text[1][:-1]+' '+val1+' '+val2+'\n'
             elif text[1][:-1]=='*':
-                msg=json.dumps(server_data)
-            print(msg) 
-            self.transport.write(msg.encode())   
+                msg='ok\n'
+                for key in server_data:
+                    for values in server_data[key]:
+                        val1=str(values[0])
+                        val2=str(values[1])
+                        msg=msg+key+' '+val1+' '+val2+'\n'
+            msg=msg+'\n'
+            
+        else:
+            pass
+        print(msg.encode())
+        self.transport.write(msg.encode())   
 
     
-run_server('127.0.0.1', 8888)
